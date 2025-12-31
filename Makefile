@@ -26,13 +26,14 @@ PRG = avrisp2
 # fuse values for avr: low, high, and extended
 # these values are from an Arduino Uno (ATMega328P)
 # see http://www.engbedded.com/fusecalc/ for other MCUs and options
-LFU = 0xe2
+LFU = 0xE2
 HFU = 0xD9
-EFU = 0xFC # The bit 3 has to be 1 so BODLEVEL 100 becomes 1100
+# The bit 3 has to be 1 so BODLEVEL 100 becomes 1100
+EFU = 0xFC
 # program source files (not including external libraries)
 SRC = \
 	main.c \
-	twi.c
+#	twi.c
 # where to look for external libraries (consisting of .c/.cpp files and .h files)
 # e.g. EXT = ../../EyeToSee ../../YouSART
 EXT = 
