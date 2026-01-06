@@ -1,12 +1,11 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-/* ---------- ADC ---------- */
 void ADC_init(void)
 {
     // AVcc reference
     ADMUX = (1 << REFS0);
-    ADMUX& ~(1 << ADLAR);
+    ADMUX &= ~(1 << ADLAR);
 
     // Enable ADC, prescaler = 64 (8MHz / 64 = 125kHz)
     ADCSRA |= (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1);
@@ -39,6 +38,7 @@ int main(void)
 {
     ADC_init();
 
+    // Set interrupts. Only do this when all the initializations are done
     sei();
 
     while (1)
