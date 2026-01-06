@@ -9,8 +9,8 @@ void ADC_init(void)
     ADMUX& ~(1 << ADLAR);
 
     // Enable ADC, prescaler = 64 (8MHz / 64 = 125kHz)
-    ADCSRA = (1 << ADEN) |
-             (1 << ADPS2) | (1 << ADPS1);
+    ADCSRA |= (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1);
+    ADCSRA &= ~(1 << ADPS0);
 }
 
 uint8_t ADC_read(uint8_t channel)
