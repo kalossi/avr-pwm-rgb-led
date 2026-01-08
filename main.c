@@ -30,7 +30,7 @@ uint8_t ADC_read(uint8_t channel)
     ADCSRA |= (1 << ADSC);
     while (ADCSRA & (1 << ADSC));
 
-    // Return 8 MSBs
+    // Return 8 LSBs
     return ADCL;
 }
 
