@@ -10,7 +10,6 @@ void ADC_init(void)
 {
     ADMUX  = (1 << REFS0);                 // AVcc reference, start on ADC0
     ADCSRA = (1 << ADEN)  |                // Enable ADC
-             (1 << ADIE)  |                // Enable ADC interrupt
              (1 << ADPS2) | (1 << ADPS1);  // Prescaler 64 → 125 kHz
 
     ADCSRA |= (1 << ADSC);                 // Start first conversion
