@@ -1,49 +1,62 @@
+
+#include <stdio.h>
+#include <stdlib.h>
 #include <avr/io.h>
-#include <avr/interrupt.h>
+#include <util/delay.h>
+
+#define ADCPIN 0 // ADC0
 
 void ADC_init(void)
 {
-    // AVcc reference
-    ADMUX = (1 << REFS0);
-    ADMUX &= ~(1 << ADLAR);
+    ADMUX  = (1 << REFS0);                 // AVcc reference, start on ADC0
+    ADCSRA = (1 << ADEN)  |                // Enable ADC
+             (1 << ADIE)  |                // Enable ADC interrupt
+             (1 << ADPS2) | (1 << ADPS1);  // Prescaler 64 → 125 kHz
 
-    // Enable ADC, prescaler = 64 (8MHz / 64 = 125kHz)
-    ADCSRA |= (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1);
-    ADCSRA &= ~(1 << ADPS0);
+    ADCSRA |= (1 << ADSC);                 // Start first conversion
 }
 
-uint8_t ADC_read(uint8_t channel)
+void UART_init(void)
 {
-    // Select channel (0–7) by masking top and bottom bits
-    // ADMUX bits 3:0 are a channel select and the binary representation of the channel correlates ot DECIMAL values 0-7
-    ADMUX = (ADMUX & 0xF0) | (channel & 0x0F);
-
-    // Start conversion
-    ADCSRA |= (1 << ADSC);
-
-    // Wait for conversion to finish
-    while (ADCSRA & (1 << ADSC));
-
-    // At 10-bit resolution with 125 kHz ADC clock (with prescaler 128), one conversion takes ~7-8 µs × 13 cycles = ~101-102 µs
-
-    // Only trust the second conversion result
-    ADCSRA |= (1 << ADSC);
-    while (ADCSRA & (1 << ADSC));
-
-    // Return 8 LSBs
-    return ADCL;
+        /* UART init */    
+    UCSR0A = 0;                             // Reset to default
+    UCSR0B = (1 << TXEN0);
+    UCSR0C = (1 << UCSZ01) | (1 << UCSZ00); // Master SPI
+    UBRR0L = 51;                            // 9600 baud at 8MHz
+    UBRR0H = 0;                             // Write high byte to 0
+}
+/* So called callback function for stdout - replaces stdout and streams characters to /dev/ttyUSBn via UART transmit register */
+static int log_putchar(char c, FILE *stream)
+{
+    // wait for empty transmit buffer and then send data
+    while (!(UCSR0A & (1 << UDRE0)))
+        ;
+    UDR0 = c;
+    return 0;
 }
 
 int main(void)
 {
-    ADC_init();
+    /* Hijacks stdout to UART */
+    static FILE log_stdout = FDEV_SETUP_STREAM(log_putchar, NULL, _FDEV_SETUP_WRITE);
+    stdout = &log_stdout; // replaces stdout with log_stdout address - "reroutes" all printf calls to log_putchar function
 
-    // Set interrupts. Only do this when all the initializations are done
-    sei();
+    printf("ADC Test Program\r\n");
+
+    DDRB = 0xFF;
+    DDRC = 0x00;
+    // DIDR0 = (1 << ADC0D);                            // disable digital buffer
+
+    ADC_init();
+    UART_init();
 
     while (1)
     {
-        // Read potentiometer / analog input
-        PORTD = ~ADC_read(0);
+        ADMUX |= (ADMUX & 0xF0) | (ADCPIN & 0x0F); // select ADC channel and mask the rest ADMUX
+        ADCSRA |= (1 << ADSC);                     // start conversion
+        while (ADCSRA & (1 << ADSC));              // wait for conversion to complete
+        // PORTB = ~ADCL;                             // output result to PORTB
+        printf("ADC%d: %d\r\n", ADCPIN, ADC);
+        _delay_ms(333);
     }
 }
