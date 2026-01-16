@@ -1,10 +1,6 @@
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <avr/io.h>
-#include <util/delay.h>
-
-#define ADCPIN 0 // ADC0
+#include <avr/interrupt.h>
+#include <avr/sleep.h>
 
 void ADC_init(void)
 {
@@ -16,47 +12,46 @@ void ADC_init(void)
     ADCSRA |= (1 << ADSC);                 // Start first conversion
 }
 
-void UART_init(void)
+void PWM_init(void)
 {
-        /* UART init */    
-    UCSR0A = 0;                             // Reset to default
-    UCSR0B = (1 << TXEN0);
-    UCSR0C = (1 << UCSZ01) | (1 << UCSZ00); // Master SPI
-    UBRR0L = 51;                            // 9600 baud at 8MHz
-    UBRR0H = 0;                             // Write high byte to 0
+    TCCR0A = (1 << COM0A1) | (1 << WGM01) | (1 << WGM00);
+    TCCR0B = (1 << CS01);
+
+    TCCR1A = (1 << COM1A1) | (1 << WGM11);
+    TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS11);
+
+    TCCR2A = (1 << COM2A1) | (1 << WGM21) | (1 << WGM20);
+    TCCR2B = (1 << CS22);
 }
-/* So called callback function for stdout - replaces stdout and streams characters to /dev/ttyUSBn via UART transmit register */
-static int log_putchar(char c, FILE *stream)
+
+ISR(ADC_vect)
 {
-    // wait for empty transmit buffer and then send data
-    while (!(UCSR0A & (1 << UDRE0)))
-        ;
-    UDR0 = c;
-    return 0;
+    static uint8_t ch = 0;
+    uint16_t v = ADC;
+
+    switch (ch) {
+        case 0: OCR0A = v >> 2; break;
+        case 1: OCR1A = v;      break;
+        case 2: OCR2A = v >> 2; break;
+    }
+
+    ch = (ch + 1) % 3;
+    ADMUX = (ADMUX & 0xF0) | ch;            // Select next channel
+    ADCSRA |= (1 << ADSC);                  // Start next conversion
 }
 
 int main(void)
 {
-    /* Hijacks stdout to UART */
-    static FILE log_stdout = FDEV_SETUP_STREAM(log_putchar, NULL, _FDEV_SETUP_WRITE);
-    stdout = &log_stdout; // replaces stdout with log_stdout address - "reroutes" all printf calls to log_putchar function
-
-    printf("ADC Test Program\r\n");
-
-    DDRB = 0xFF;
-    DDRC = 0x00;
-    // DIDR0 = (1 << ADC0D);                            // disable digital buffer
+    DDRC = 0x00;          // Set PORTC as input (ADC)
+    DDRD = 0xFF;          // Set PORTB as output (PWM)
 
     ADC_init();
-    UART_init();
+    PWM_init();
 
-    while (1)
-    {
-        ADMUX |= (ADMUX & 0xF0) | (ADCPIN & 0x0F); // select ADC channel and mask the rest ADMUX
-        ADCSRA |= (1 << ADSC);                     // start conversion
-        while (ADCSRA & (1 << ADSC));              // wait for conversion to complete
-        // PORTB = ~ADCL;                             // output result to PORTB
-        printf("ADC%d: %d\r\n", ADCPIN, ADC);
-        _delay_ms(333);
+    set_sleep_mode(SLEEP_MODE_IDLE);
+    sei();
+
+    while (1) {
+        sleep_cpu();
     }
 }
