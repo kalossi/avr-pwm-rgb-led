@@ -19,7 +19,7 @@ void PWM_init(void)
     TCCR0B = (1 << CS01); // Prescaler 8
 
     TCCR1A = (1 << COM1A1) | (1 << WGM12) | (1 << WGM10); // Fast PWM 8-bit
-    TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS11); // Prescaler 8
+    TCCR1B = (1 << CS11); // Prescaler 8
 
     TCCR2A = (1 << COM2A1) | (1 << WGM21) | (1 << WGM20); // Fast PWM
     TCCR2B = (1 << CS21); // Prescaler 8
