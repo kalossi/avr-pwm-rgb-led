@@ -9,8 +9,6 @@ void ADC_init(void)
     ADCSRA = (1 << ADEN)  |                // Enable ADC
              (1 << ADIE)  |                // Enable ADC interrupt
              (1 << ADPS2) | (1 << ADPS1);  // Prescaler 64 → 125 kHz
-
-    ADCSRA |= (1 << ADSC);                 // Start first conversion
 }
 
 void PWM_init(void)
@@ -57,6 +55,8 @@ int main(void)
 
     ADC_init();
     PWM_init();
+    
+    ADCSRA |= (1 << ADSC);                 // Start first conversion
 
     // Enable sleep mode - SLEEP_MODE_IDLE means CPU is stopped, peripherals work
     set_sleep_mode(SLEEP_MODE_IDLE);
