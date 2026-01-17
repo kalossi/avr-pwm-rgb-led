@@ -26,14 +26,16 @@ void PWM_init(void)
 }
 
 /* ADC interrupt service routine - fires when ADC conversion is complete */
+/* Cycles through ADC channels 0 to 2 on each run*/
 ISR(ADC_vect)
 {
     static uint8_t ch = 0;
     uint16_t v = ADC;
 
     switch (ch) {
+        // Bit shift right by 2 to convert 10-bit ADC value to 8-bit PWM value
         case 0: OCR0A = v >> 2; break;
-        case 1: OCR1A = v;      break;
+        case 1: OCR1A = v >> 2; break;
         case 2: OCR2A = v >> 2; break;
     }
 
