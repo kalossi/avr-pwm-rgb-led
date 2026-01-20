@@ -9,9 +9,10 @@ Datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotiv
 4) Pulled up RESET permanently with a resistor connected to VCC.
 5) Connected USB UART device to Rx/Rt and GND for debugging ADC result in terminal (see code in adc branch)
 6) 100k resistors for pull down at PWM
-7) Programmed the fuses for BODLEVEL etc. (see Makefile):
+7) Added two capasitors, C_Aref and C_AVCC for decoupling purposes so the VCC dont AVCC dont tank under heavy load - Compansates the inductance
+8) Programmed the fuses for BODLEVEL etc. (see Makefile):
 ```make fuse```
-8) Code changes are programmed to flash using:
+9) Code changes are programmed to flash using:
 ```make flash```
 - You can check if all the libraries are included using:
 ```make```
