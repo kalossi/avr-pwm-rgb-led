@@ -16,8 +16,8 @@ void PWM_init(void)
     TCCR0A = (1 << COM0A1) | (1 << WGM01) | (1 << WGM00); // Fast PWM
     TCCR0B = (1 << CS01); // Prescaler 8
 
-    TCCR1A = (1 << COM1A1) | (1 << WGM12) | (1 << WGM10); // Fast PWM 8-bit
-    TCCR1B = (1 << CS11); // Prescaler 8
+    TCCR1A = (1 << COM1A1)  | (1 << WGM10); // Fast PWM 8-bit
+    TCCR1B = (1 << CS11) | (1 << WGM12); // Prescaler 8
 
     TCCR2A = (1 << COM2A1) | (1 << WGM21) | (1 << WGM20); // Fast PWM
     TCCR2B = (1 << CS21); // Prescaler 8
@@ -51,7 +51,8 @@ ISR(ADC_vect)
 int main(void)
 {
     DDRC = 0x00;          // Set PORTC as input (ADC)
-    DDRD = 0xFF;          // Set PORTB as output (PWM)
+    DDRD = 0xFF; 
+    DDRB = 0xFF;          // Set PORTB as output (PWM)
 
     ADC_init();
     PWM_init();
