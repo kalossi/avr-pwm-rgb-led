@@ -17,4 +17,5 @@ Datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotiv
 - You can check if all the libraries are included using:
 ```make```
 10) Some prototyping usin kiCad:
+
 ![PCB](prototype-pcb.png)
