@@ -4,7 +4,7 @@ Datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotiv
 
 | ![Circuit](circuit-layout.png) |
 | :--: |
-- ATmega328p has 5 Analog to digital comversion inputs and 6 Pulse Width Modulation outputs. Im using here ADC:s 0-2 and PWM timer outputs OC0A, OC1A OC2A to control RGB LED strip.
+| ATmega328p has 5 Analog to digital comversion inputs and 6 Pulse Width Modulation outputs. Im using here ADC:s 0-2 and PWM timer outputs OC0A, OC1A OC2A to control RGB LED strip. |
 2) Installed and set up development environment:
 ```sudo apt-get update && sudo apt-get install -y avr-libc gcc-avr avrdude make usbutils binutils-avr libc6-dev```
 3) Olimex SPI is set to use +5V VCC. The SPI needs refrenece VCC and GND to be connected to MCU in order to get the signal levels right.
