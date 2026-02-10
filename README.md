@@ -18,8 +18,9 @@ Datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotiv
 - You can check if all the libraries are included using:
 ```make```
 8) Some prototyping usin kiCad:
-TODO: Try IRLZ44N MOSFET for more close to Gate Off = 0V results
 
 | ![PCB](prototype-pcb.png) |
 |:--:|
 | *note: I used the wiring of my ready made LED strip - not my choice! :D* |
+
+TODO: Try IRLZ44N MOSFET for more close to Gate Off = 0V results
