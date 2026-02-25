@@ -39,8 +39,7 @@ ISR(ADC_vect)
 
     // if is more faster for AVR to do increment and compare than modulo
     ch++;
-    if (ch >= 3)
-    {
+    if (ch >= 3){
         ch = 0;
     }
 
